@@ -1,0 +1,44 @@
+Kafka Setup on AWS EC2
+Step 1: Download and Extract Kafka
+
+wget https://downloads.apache.org/kafka/3.3.1/kafka_2.12-3.3.1.tgz  
+tar -xvf kafka_2.12-3.3.1.tgz  
+Step 2: Install Java (if not installed)
+
+java -version  
+sudo yum install java-1.8.0-openjdk  
+java -version  
+Step 3: Start ZooKeeper
+
+
+cd kafka_2.12-3.3.1  
+bin/zookeeper-server-start.sh config/zookeeper.properties  
+Step 4: Start Kafka Server
+Open a new terminal, SSH into your EC2 instance, and run:
+
+
+export KAFKA_HEAP_OPTS="-Xmx256M -Xms128M"  
+cd kafka_2.12-3.3.1  
+bin/kafka-server-start.sh config/server.properties  
+Step 5: Configure Kafka for Public Access
+Modify the server.properties file:
+
+
+sudo nano config/server.properties  
+Update ADVERTISED_LISTENERS:
+
+
+ADVERTISED_LISTENERS=PLAINTEXT://<Public_IP>:9092  
+Save the file and restart Kafka.
+
+Step 6: Create a Kafka Topic
+
+cd kafka_2.12-3.3.1  
+bin/kafka-topics.sh --create --topic demo_testing2 --bootstrap-server <Public_IP>:9092 --replication-factor 1 --partitions 1  
+Step 7: Start Kafka Producer
+
+bin/kafka-console-producer.sh --topic demo_testing2 --bootstrap-server <Public_IP>:9092  
+Step 8: Start Kafka Consumer
+
+cd kafka_2.12-3.3.1  
+bin/kafka-console-consumer.sh --topic demo_testing2 --bootstrap-server <Public_IP>:9092
